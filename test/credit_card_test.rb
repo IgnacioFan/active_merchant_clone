@@ -25,4 +25,9 @@ class CreditCardTest < Minitest::Test
     assert_equal "4242424242424242", @credit_card.number
     assert_equal "424", @credit_card.verification_value
   end
+
+  def test_validate
+    assert_equal({}, @credit_card.validate)
+  end
+
 end
