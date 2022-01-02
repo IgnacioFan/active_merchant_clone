@@ -30,4 +30,7 @@ class CreditCardTest < Minitest::Test
     assert_equal({}, @credit_card.validate)
   end
 
+  def test_display_number
+    assert_equal "XXXX-XXXX-XXXX-4242", @credit_card.display_number
+  end
 end

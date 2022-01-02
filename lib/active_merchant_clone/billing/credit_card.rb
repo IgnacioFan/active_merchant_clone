@@ -1,9 +1,11 @@
 
 require "active_merchant_clone/billing/model"
-
+require "active_merchant_clone/billing/credit_card_methods"
 module ActiveMerchantClone
   module Billing
     class CreditCard < Model
+      include CreditCardMethods
+
       # returns or sets the first name of the card holder
       attr_accessor :first_name
       # returns or sets the last name of the card holder
@@ -42,6 +44,10 @@ module ActiveMerchantClone
             end
           end
         )
+      end
+
+      def display_number
+        self.class.mask(number)
       end
     end
   end
