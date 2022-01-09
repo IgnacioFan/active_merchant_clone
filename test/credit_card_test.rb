@@ -6,6 +6,7 @@ require "active_merchant_clone/billing/credit_card"
 require "minitest/autorun"
 
 class CreditCardTest < Minitest::Test
+
   def setup
     @credit_card = ActiveMerchantClone::Billing::CreditCard.new(
       first_name: "foo",
@@ -30,7 +31,25 @@ class CreditCardTest < Minitest::Test
     assert_equal({}, @credit_card.validate)
   end
 
+  def test_validate_essential_attributes
+    credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+      first_name: "",
+      last_name: "",
+      month: "13",
+      year: "2000",
+      brand: "visa",
+      number: "4242424242424242",
+      verification_value: "424"
+    )
+
+    assert_equal({:first_name=>["cannot be empty"], :last_name=>["cannot be empty"], :month=>["is not a valid month"], :year=>["is not a valid year", "expired"]}, credit_card.validate)
+  end
+
   def test_display_number
     assert_equal "XXXX-XXXX-XXXX-4242", @credit_card.display_number
+  end
+
+  def test_requires_name?
+    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.requires_name?)
   end
 end

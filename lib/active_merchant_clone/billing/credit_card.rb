@@ -1,10 +1,20 @@
-
+require "date"
 require "active_merchant_clone/billing/model"
 require "active_merchant_clone/billing/credit_card_methods"
 module ActiveMerchantClone
   module Billing
     class CreditCard < Model
       include CreditCardMethods
+
+      class << self
+        attr_accessor :require_name
+
+        def requires_name?
+          require_name
+        end
+      end
+
+      self.require_name = true
 
       # returns or sets the first name of the card holder
       attr_accessor :first_name
@@ -48,6 +58,65 @@ module ActiveMerchantClone
 
       def display_number
         self.class.mask(number)
+      end
+
+      def validate
+        errors = validate_essential_attributes
+        errors_hash(errors)
+      end
+
+      def expired?
+        expiry_date.expired?
+      end
+
+      private
+
+      def validate_essential_attributes
+        errors = []
+
+        if self.class.requires_name?
+          errors << [:first_name, "cannot be empty"] if empty?(first_name)
+          errors << [:last_name,  "cannot be empty"] if empty?(last_name)
+        end
+
+        errors << [:month, "is required"] if empty?(month)
+        errors << [:month, "is not a valid month"] unless valid_month?(month)
+        errors << [:year, "is required"] if empty?(year)
+        errors << [:year, "is not a valid year"] unless valid_expiry_year?(year)
+        errors << [:year, "expired"] if expired?
+
+        errors
+      end
+
+      def expiry_date
+        ExpiryDate.new(month, year)
+      end
+
+      class ExpiryDate
+        attr_reader :month, :year
+        def  initialize(month, year)
+          @month = month
+          @year = year
+        end
+
+        # rescue exception is neccesary becaue month could be invalid
+        def expired?
+          Time.now.utc > expiration
+        rescue ArgumentError
+          Time.at(0).utc
+        end
+
+        def expiration
+          Time.utc(year, month, month_days, 23, 59, 59)
+        end
+
+        private
+
+        def month_days
+          mdays = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+          mdays[2] = 29 if Date.new(year).leap?
+          mdays[month]
+        end
       end
     end
   end
