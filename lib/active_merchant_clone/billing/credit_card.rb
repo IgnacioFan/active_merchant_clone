@@ -94,20 +94,20 @@ module ActiveMerchantClone
 
       class ExpiryDate
         attr_reader :month, :year
-        def  initialize(month, year)
-          @month = month
-          @year = year
+        def initialize(month, year)
+          @month = month.to_i
+          @year = year.to_i
         end
 
         # rescue exception is neccesary becaue month could be invalid
         def expired?
           Time.now.utc > expiration
-        rescue ArgumentError
-          Time.at(0).utc
         end
 
         def expiration
           Time.utc(year, month, month_days, 23, 59, 59)
+        rescue ArgumentError
+          Time.at(0).utc
         end
 
         private
