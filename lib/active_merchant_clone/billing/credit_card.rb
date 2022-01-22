@@ -8,13 +8,26 @@ module ActiveMerchantClone
 
       class << self
         attr_accessor :require_name
+        # The verification value is a card security code
+        attr_accessor :require_verification_value
+        attr_accessor :default_verification_length
 
         def requires_name?
           require_name
         end
+
+        def require_verification_value?
+          require_verification_value
+        end
+
+        def valid_verification_value?(code)
+          (code.to_s =~ /^\d{#{default_verification_length}}$/) == 0
+        end
       end
 
       self.require_name = true
+      self.require_verification_value = true
+      self.default_verification_length = 3
 
       # returns or sets the first name of the card holder
       attr_accessor :first_name
@@ -61,7 +74,7 @@ module ActiveMerchantClone
       end
 
       def validate
-        errors = validate_essential_attributes
+        errors = validate_essential_attributes + validate_verification_value
         errors_hash(errors)
       end
 
@@ -84,6 +97,18 @@ module ActiveMerchantClone
         errors << [:year, "is required"] if empty?(year)
         errors << [:year, "is not a valid year"] unless valid_expiry_year?(year)
         errors << [:year, "expired"] if expired?
+
+        errors
+      end
+
+      def validate_verification_value
+        errors = []
+
+        if !self.class.require_verification_value?
+          errors << [:verification_value, "is required"]
+        elsif !self.class.valid_verification_value?(verification_value)
+          errors << [:verification_value, "should be #{default_verification_length} digits"]
+        end
 
         errors
       end

@@ -22,6 +22,7 @@ Or install it yourself as:
 - [x] establish basic credit card model
 - [x] enhance credit card formatting
 - [ ] add validate method for credit card model
+- [ ] enhace test helper
 - [ ] ...
 - [ ] enhance gateway
 - [ ] enhance gateways
@@ -35,4 +36,8 @@ Or install it yourself as:
 - add `CreditCardFormatting` and test
 
 ### task3 - add validate method for credit card model
-- add validate method and test
+- add `validate_essential_attributes` and test
+- add `ExpiryDate` and test
+- add `validate_verification_value` and test
+
+### task4 - enhance test helper

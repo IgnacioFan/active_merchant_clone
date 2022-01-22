@@ -27,6 +27,14 @@ class CreditCardTest < Minitest::Test
     assert_equal "424", @credit_card.verification_value
   end
 
+  def test_require_verification_value?
+    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.require_verification_value?)
+  end
+
+  def test_valid_verification_value
+    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.valid_verification_value?("424"))
+  end
+
   def test_validate
     assert_equal({}, @credit_card.validate)
   end
