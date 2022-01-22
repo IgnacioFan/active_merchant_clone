@@ -1,6 +1,8 @@
 require "date"
 require "active_merchant_clone/billing/model"
+require "active_merchant_clone/billing/credit_card_brands"
 require "active_merchant_clone/billing/credit_card_methods"
+
 module ActiveMerchantClone
   module Billing
     class CreditCard < Model
@@ -74,7 +76,7 @@ module ActiveMerchantClone
       end
 
       def validate
-        errors = validate_essential_attributes + validate_verification_value
+        errors = validate_essential_attributes + validate_verification_value + validate_card_brand
         errors_hash(errors)
       end
 
@@ -108,6 +110,18 @@ module ActiveMerchantClone
           errors << [:verification_value, "is required"]
         elsif !self.class.valid_verification_value?(verification_value)
           errors << [:verification_value, "should be #{default_verification_length} digits"]
+        end
+
+        errors
+      end
+
+      def validate_card_brand
+        errors = []
+
+        if empty?(brand)
+          errors << [:brand, "is invalid"]
+        elsif !CreditCardBrands.include_card_companies?(brand)
+          errors << [:brand, "doesn't include in card companies"]
         end
 
         errors
