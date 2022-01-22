@@ -76,7 +76,7 @@ module ActiveMerchantClone
       end
 
       def validate
-        errors = validate_essential_attributes + validate_verification_value + validate_card_brand
+        errors = validate_essential_attributes + validate_verification_value + validate_card_brand + validate_card_number
         errors_hash(errors)
       end
 
@@ -122,6 +122,19 @@ module ActiveMerchantClone
           errors << [:brand, "is invalid"]
         elsif !CreditCardBrands.include_card_companies?(brand)
           errors << [:brand, "doesn't include in card companies"]
+        end
+
+        errors
+      end
+
+      # TODO(weilong): add if credit card number doen't match its company
+      def validate_card_number
+        errors = []
+
+        if empty?(number)
+          errors << [:number, 'is required']
+        elsif !valid_number?(number)
+          errors << [:number, 'is not a valid credit card number']
         end
 
         errors
