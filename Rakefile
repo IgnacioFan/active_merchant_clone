@@ -7,12 +7,12 @@ require "rake"
 require "rake/testtask"
 
 desc "Run the unit test suite"
-task default: "test:units"
-task test: "test:units"
+task default: "test:billing"
+task test_billing: "test:billing"
 
 namespace :test do
-  Rake::TestTask.new(:units) do |t|
-    t.pattern = "test/**/*_test.rb"
+  Rake::TestTask.new(:billing) do |t|
+    t.pattern = "test/billing/**/*_test.rb"
     t.libs << "test"
     t.verbose = false
   end
