@@ -1,16 +1,10 @@
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-
-puts $LOAD_PATH
-
-require "active_merchant_clone/billing/credit_card"
-require "active_merchant_clone/billing/credit_card_formatting"
-require "minitest/autorun"
+require "test_helper"
 
 class CreditCardFormattingTest < Minitest::Test
   include ActiveMerchantClone::Billing::CreditCardFormatting
 
   def setup
-    @credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+    @credit_card = CreditCard.new(
       first_name: "foo",
       last_name: "bar",
       month: "9",
