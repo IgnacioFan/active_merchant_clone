@@ -1,9 +1,4 @@
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-
-puts $LOAD_PATH
-
-require "active_merchant_clone/billing/credit_card_brands"
-require "minitest/autorun"
+require "test_helper"
 
 class CreditCardBrandsTest < Minitest::Test
 
