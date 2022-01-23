@@ -2,10 +2,6 @@ require "test_helper"
 
 class CreditCardMethodsTest < Minitest::Test
 
-  class CreditCard
-    include ActiveMerchantClone::Billing::CreditCardMethods
-  end
-
   def setup
     @card = CreditCard.new
   end

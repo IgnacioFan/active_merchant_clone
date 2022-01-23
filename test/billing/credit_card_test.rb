@@ -3,7 +3,7 @@ require "test_helper"
 class CreditCardTest < Minitest::Test
 
   def setup
-    @credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+    @credit_card = CreditCard.new(
       first_name: "foo",
       last_name: "bar",
       month: "9",
@@ -23,11 +23,11 @@ class CreditCardTest < Minitest::Test
   end
 
   def test_require_verification_value?
-    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.require_verification_value?)
+    assert_equal(true, CreditCard.require_verification_value?)
   end
 
   def test_valid_verification_value
-    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.valid_verification_value?("424"))
+    assert_equal(true, CreditCard.valid_verification_value?("424"))
   end
 
   def test_validate
@@ -35,7 +35,7 @@ class CreditCardTest < Minitest::Test
   end
 
   def test_validate_essential_attributes
-    credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+    credit_card = CreditCard.new(
       first_name: "",
       last_name: "",
       month: "13",
@@ -53,6 +53,6 @@ class CreditCardTest < Minitest::Test
   end
 
   def test_requires_name?
-    assert_equal(true, ActiveMerchantClone::Billing::CreditCard.requires_name?)
+    assert_equal(true, CreditCard.requires_name?)
   end
 end

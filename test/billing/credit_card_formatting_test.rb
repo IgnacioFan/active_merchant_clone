@@ -4,7 +4,7 @@ class CreditCardFormattingTest < Minitest::Test
   include ActiveMerchantClone::Billing::CreditCardFormatting
 
   def setup
-    @credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+    @credit_card = CreditCard.new(
       first_name: "foo",
       last_name: "bar",
       month: "9",
