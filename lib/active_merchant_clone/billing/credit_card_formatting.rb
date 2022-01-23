@@ -1,13 +1,18 @@
+# purpose: format a few specific attributes
+# - moth and year
+#
 module ActiveMerchantClone
   module Billing
     module CreditCardFormatting
+      include Empty
+
       # This method can be overwritten, depends on the billing gateway
       def expdate(credit_card)
         "#{format(credit_card.month, :two_digits)}#{format(credit_card.year, :two_digits)}"
       end
 
       def format(number, option)
-        return "" if number.nil?
+        return "" if empty?(number)
 
         case option
         when :two_digits then sprintf("%.2i", number.to_i)[-2..-1]
