@@ -40,24 +40,14 @@ module ActiveMerchantClone
       # returns the expiry year for the card
       attr_reader :year
       # return the card brand
-      def brand
-        @brand
-      end
+      attr_reader :brand
 
       def brand=(value)
         value = value && value.to_s.dup
         @brand = value
       end
-      # returns the credit card number.
-      attr_reader :number
 
-      def number=(value)
-        # puts empty?(value)
-        @number = (empty?(value) ? value : value.to_s.gsub(/[^\d]/, ''))
-      end
-      # returns or sets the card verification value.
-      attr_accessor :verification_value
-
+      # convert month, year value etc to be integer
       %w(month year start_month start_year).each do |m|
         class_eval %(
           def #{m}=(v)
@@ -71,6 +61,16 @@ module ActiveMerchantClone
         )
       end
 
+      # returns the credit card number.
+      attr_reader :number
+
+      def number=(value)
+        @number = (empty?(value) ? value : value.to_s.gsub(/[^\d]/, ''))
+      end
+
+      # returns or sets the card verification value.
+      attr_accessor :verification_value
+
       def display_number
         self.class.mask(number)
       end
@@ -80,8 +80,22 @@ module ActiveMerchantClone
         errors_hash(errors)
       end
 
+      def valid_month?
+        (1..12).cover?(month)
+      end
+
+      def valid_expiry_year?
+        (Time.now.year..(Time.now.year + 20)).cover?(year)
+      end
+
       def expired?
         expiry_date.expired?
+      end
+
+      # TODO(weilong): add test mode and add number algorithms
+      def valid_number?
+        valid_card_number_length? &&
+        valid_card_number_characters?
       end
 
       private
@@ -95,18 +109,19 @@ module ActiveMerchantClone
         end
 
         errors << [:month, "is required"] if empty?(month)
-        errors << [:month, "is not a valid month"] unless valid_month?(month)
+        errors << [:month, "is not a valid month"] unless valid_month?
         errors << [:year, "is required"] if empty?(year)
-        errors << [:year, "is not a valid year"] unless valid_expiry_year?(year)
+        errors << [:year, "is not a valid year"] unless valid_expiry_year?
         errors << [:year, "expired"] if expired?
 
         errors
       end
 
       def validate_verification_value
+        return [] unless self.class.require_verification_value?
         errors = []
 
-        if !self.class.require_verification_value?
+        if empty?(verification_value)
           errors << [:verification_value, "is required"]
         elsif !self.class.valid_verification_value?(verification_value)
           errors << [:verification_value, "should be #{default_verification_length} digits"]
@@ -133,11 +148,21 @@ module ActiveMerchantClone
 
         if empty?(number)
           errors << [:number, 'is required']
-        elsif !valid_number?(number)
+        elsif !valid_number?
           errors << [:number, 'is not a valid credit card number']
         end
 
         errors
+      end
+
+      def valid_card_number_length?
+        return false if number.nil?
+        number.length >= 12
+      end
+
+      def valid_card_number_characters?
+        return false if number.nil?
+        !number.match(/\D/)
       end
 
       def expiry_date

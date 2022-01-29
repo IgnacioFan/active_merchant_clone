@@ -12,11 +12,23 @@ class CreditCardTest < Minitest::Test
       number: "4242424242424242",
       verification_value: "424"
     )
+
+    @invalid_credit_card = CreditCard.new(
+      first_name: "",
+      last_name: "",
+      month: "13",
+      year: "2000",
+      brand: "visa",
+      number: "4242424242424242",
+      verification_value: "424"
+    )
   end
 
-  def test_invalid_credit_card
+  def test_credit_card_attributes
     assert_equal "foo", @credit_card.first_name
     assert_equal "bar", @credit_card.last_name
+    assert_equal 9, @credit_card.month
+    assert_equal 2022, @credit_card.year
     assert_equal "visa", @credit_card.brand
     assert_equal "4242424242424242", @credit_card.number
     assert_equal "424", @credit_card.verification_value
@@ -30,29 +42,30 @@ class CreditCardTest < Minitest::Test
     assert_equal(true, CreditCard.valid_verification_value?("424"))
   end
 
-  def test_validate
-    assert_equal({}, @credit_card.validate)
-  end
-
-  def test_validate_essential_attributes
-    credit_card = CreditCard.new(
-      first_name: "",
-      last_name: "",
-      month: "13",
-      year: "2000",
-      brand: "visa",
-      number: "4242424242424242",
-      verification_value: "424"
-    )
-
-    assert_equal({:first_name=>["cannot be empty"], :last_name=>["cannot be empty"], :month=>["is not a valid month"], :year=>["is not a valid year", "expired"]}, credit_card.validate)
+  def test_requires_name?
+    assert_equal(true, CreditCard.requires_name?)
   end
 
   def test_display_number
     assert_equal "XXXX-XXXX-XXXX-4242", @credit_card.display_number
   end
 
-  def test_requires_name?
-    assert_equal(true, CreditCard.requires_name?)
+  def test_valid_month?
+    assert_equal true, @credit_card.valid_month?
+    assert_equal false, @invalid_credit_card.valid_month?
+  end
+
+  def test_valid_expiry_year?
+    assert_equal true, @credit_card.valid_expiry_year?
+    assert_equal false, @invalid_credit_card.valid_expiry_year?
+  end
+
+  def test_valid_number?
+    assert_equal true, @credit_card.valid_number?
+  end
+
+  def test_validate
+    assert_equal({}, @credit_card.validate)
+    assert_equal({:first_name=>["cannot be empty"], :last_name=>["cannot be empty"], :month=>["is not a valid month"], :year=>["is not a valid year", "expired"]}, @invalid_credit_card.validate)
   end
 end
