@@ -1,6 +1,6 @@
-require "date"
 require "active_merchant_clone/billing/model"
 require "active_merchant_clone/billing/credit_card_brands"
+require "active_merchant_clone/billing/credit_card_expiry_date"
 require "active_merchant_clone/billing/credit_card_methods"
 
 module ActiveMerchantClone
@@ -89,7 +89,7 @@ module ActiveMerchantClone
       end
 
       def expired?
-        expiry_date.expired?
+        CreditCardExpiryDate.new(month, year).expired?
       end
 
       # TODO(weilong): add test mode and add number algorithms
@@ -163,37 +163,6 @@ module ActiveMerchantClone
       def valid_card_number_characters?
         return false if number.nil?
         !number.match(/\D/)
-      end
-
-      def expiry_date
-        ExpiryDate.new(month, year)
-      end
-
-      class ExpiryDate
-        attr_reader :month, :year
-        def initialize(month, year)
-          @month = month.to_i
-          @year = year.to_i
-        end
-
-        # rescue exception is neccesary becaue month could be invalid
-        def expired?
-          Time.now.utc > expiration
-        end
-
-        def expiration
-          Time.utc(year, month, month_days, 23, 59, 59)
-        rescue ArgumentError
-          Time.at(0).utc
-        end
-
-        private
-
-        def month_days
-          mdays = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-          mdays[2] = 29 if Date.new(year).leap?
-          mdays[month]
-        end
       end
     end
   end
