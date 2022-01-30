@@ -1,14 +1,12 @@
 require "test_helper"
 
 class CreditCardMethodsTest < Minitest::Test
+  include CreditCardMethods
 
-  def setup
-    @card = CreditCard.new
-  end
-
-  def test_valid_number?
-    assert_equal false, @card.valid_number?("42424242424")
-    assert_equal false, @card.valid_number?("42242424242bb")
-    assert_equal true, @card.valid_number?("4242424242424242")
+  def test_mask
+    assert_equal "XXXX-XXXX-XXXX-2424", CreditCardMethodsTest.mask("42424242424")
+    assert_equal "XXXX-XXXX-XXXX-2bb", CreditCardMethodsTest.mask("2bb")
+    assert_equal "XXXX-XXXX-XXXX-aabb", CreditCardMethodsTest.mask("aabb")
+    assert_equal "XXXX-XXXX-XXXX-", CreditCardMethodsTest.mask("")
   end
 end
