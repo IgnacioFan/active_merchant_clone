@@ -1,7 +1,7 @@
 require "test_helper"
 
 class CreditCardFormattingTest < Minitest::Test
-  include ActiveMerchantClone::Billing::CreditCardFormatting
+  include CreditCardFormatting
 
   def setup
     @credit_card = CreditCard.new(
@@ -19,20 +19,19 @@ class CreditCardFormattingTest < Minitest::Test
     assert_equal("0922", expdate(@credit_card))
   end
 
-  def test_format_two_digits
+  def test_format
+    # two_digits
     assert_equal("22", format("2022", :two_digits))
     assert_equal("22", format(2022, :two_digits))
     assert_equal("19", format(19, :two_digits))
     assert_equal("", format(nil, :two_digits))
     assert_equal("", format("", :two_digits))
-  end
 
-  def test_format_four_digits
+    # four_digits
     assert_equal("2022", format("2022", :four_digits))
     assert_equal("2022", format(2022, :four_digits))
-  end
 
-  def test_format_four_digits_year
+    # four_digits_year
     assert_equal("2022", format("22", :four_digits_year))
     assert_equal("2022", format(22, :four_digits_year))
   end
