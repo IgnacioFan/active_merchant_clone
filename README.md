@@ -32,36 +32,18 @@ rake test_billing
 ## Example Usage
 
 ```ruby
-# Send requests to the gateway's test servers
-ActiveMerchant::Billing::Base.mode = :test
-
 # Create a new credit card object
-credit_card = ActiveMerchant::Billing::CreditCard.new(
-  :number     => '4111111111111111',
-  :month      => '8',
-  :year       => '2009',
-  :first_name => 'Tobias',
-  :last_name  => 'Luetke',
+credit_card = ActiveMerchantClone::Billing::CreditCard.new(
+  :number     => '4242424242424242',
+  :month      => '4',
+  :year       => '2022',
+  :first_name => 'Weilong',
+  :last_name  => 'Fan',
   :verification_value  => '123'
 )
 
-if credit_card.valid?
-  # Create a gateway object to the TrustCommerce service
-  gateway = ActiveMerchant::Billing::TrustCommerceGateway.new(
-    :login    => 'TestMerchant',
-    :password => 'password'
-  )
-
-  # Authorize for $10 dollars (1000 cents)
-  response = gateway.authorize(1000, credit_card)
-
-  if response.success?
-    # Capture the money
-    gateway.capture(1000, response.authorization)
-  else
-    raise StandardError, response.message
-  end
-end
+credit_card.validate # => {}
+credit_card.display_number # => XXXX-XXXX-XXXX-4242
 ```
 
 references http://activemerchant.org/
