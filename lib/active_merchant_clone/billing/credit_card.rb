@@ -8,11 +8,12 @@ module ActiveMerchantClone
     class CreditCard < Model
       include CreditCardMethods
 
+      DEFAULT_EXPIRY_YEAR = 20
+      DEFAULT_VERIFICATION_LENGTH = 3
+      MAX_CARD_NUMBER_LENGTH = 12
+
       class << self
-        attr_accessor :require_name
-        # The verification value is a card security code
-        attr_accessor :require_verification_value
-        attr_accessor :default_verification_length
+        attr_accessor :require_name, :require_verification_value
 
         def requires_name?
           require_name
@@ -23,53 +24,31 @@ module ActiveMerchantClone
         end
 
         def valid_verification_value?(code)
-          (code.to_s =~ /^\d{#{default_verification_length}}$/) == 0
+          (code.to_s =~ /^\d{#{DEFAULT_VERIFICATION_LENGTH}}$/) == 0
         end
       end
 
       self.require_name = true
       self.require_verification_value = true
-      self.default_verification_length = 3
 
-      # returns or sets the first name of the card holder
-      attr_accessor :first_name
-      # returns or sets the last name of the card holder
-      attr_accessor :last_name
-      # returns the expiry month for the card
-      attr_reader :month
-      # returns the expiry year for the card
-      attr_reader :year
-      # return the card brand
-      attr_reader :brand
+      attr_accessor :first_name, :last_name, :verification_value
+      attr_reader :brand, :number, :month, :year
 
       def brand=(value)
-        value = value && value.to_s.dup
-        @brand = value
+        @brand = value.to_s.downcase
       end
-
-      # convert month, year value etc to be integer
-      %w(month year start_month start_year).each do |m|
-        class_eval %(
-          def #{m}=(v)
-            @#{m} = case v
-            when "", nil, 0
-              nil
-            else
-              v.to_i
-            end
-          end
-        )
-      end
-
-      # returns the credit card number.
-      attr_reader :number
 
       def number=(value)
         @number = (empty?(value) ? value : value.to_s.gsub(/[^\d]/, ''))
       end
 
-      # returns or sets the card verification value.
-      attr_accessor :verification_value
+      def month=(value)
+        @month = (empty?(value) ? nil : value.to_i)
+      end
+
+      def year=(value)
+        @year = (empty?(value) ? nil : value.to_i)
+      end
 
       def display_number
         self.class.mask(number)
@@ -85,7 +64,7 @@ module ActiveMerchantClone
       end
 
       def valid_expiry_year?
-        (Time.now.year..(Time.now.year + 20)).cover?(year)
+        (Time.now.year..(Time.now.year + DEFAULT_EXPIRY_YEAR)).cover?(year)
       end
 
       def expired?
@@ -99,6 +78,16 @@ module ActiveMerchantClone
       end
 
       private
+
+      def valid_card_number_length?
+        return false if number.nil?
+        number.length >= MAX_CARD_NUMBER_LENGTH
+      end
+
+      def valid_card_number_characters?
+        return false if number.nil?
+        !number.match(/\D/)
+      end
 
       def validate_essential_attributes
         errors = []
@@ -124,7 +113,7 @@ module ActiveMerchantClone
         if empty?(verification_value)
           errors << [:verification_value, "is required"]
         elsif !self.class.valid_verification_value?(verification_value)
-          errors << [:verification_value, "should be #{default_verification_length} digits"]
+          errors << [:verification_value, "should be #{DEFAULT_VERIFICATION_LENGTH} digits"]
         end
 
         errors
@@ -153,16 +142,6 @@ module ActiveMerchantClone
         end
 
         errors
-      end
-
-      def valid_card_number_length?
-        return false if number.nil?
-        number.length >= 12
-      end
-
-      def valid_card_number_characters?
-        return false if number.nil?
-        !number.match(/\D/)
       end
     end
   end
