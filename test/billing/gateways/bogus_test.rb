@@ -9,10 +9,12 @@ class BogusTest < Minitest::Test
       login: "bogus",
       password: "bogus"
     )
+
+    @credit_card = credit_card(CREDIT_CARD_SUCCESS_NUMBER)
   end
 
   def test_authorize
-    assert @gateway.authorize(1000, credit_card(CREDIT_CARD_SUCCESS_NUMBER)).success?
+    assert @gateway.authorize(1000, @credit_card).success?
 
     # response = @gateway.authorize(1000, credit_card(CREDIT_CARD_FAILURE_NUMBER))
     # refute response.success?
