@@ -2,7 +2,7 @@ require "test_helper"
 
 class BogusTest < Minitest::Test
   CREDIT_CARD_SUCCESS_NUMBER = "4444333322221111"
-  CREDIT_CARD_FAILURE_NUMBER = "4444222233331111"
+  CREDIT_CARD_FAILURE_NUMBER = "4444333311112222"
 
   def setup
     @gateway = Bogus.new(
@@ -10,14 +10,25 @@ class BogusTest < Minitest::Test
       password: "bogus"
     )
 
-    @credit_card = credit_card(CREDIT_CARD_SUCCESS_NUMBER)
+    @valid_credit_card = credit_card(CREDIT_CARD_SUCCESS_NUMBER)
+    @invalid_credit_card = credit_card(CREDIT_CARD_FAILURE_NUMBER)
   end
 
-  def test_authorize
-    assert @gateway.authorize(1000, @credit_card).success?
+  def test_display_name
+    assert_equal "Test", Bogus.display_name
+  end
 
-    # response = @gateway.authorize(1000, credit_card(CREDIT_CARD_FAILURE_NUMBER))
-    # refute response.success?
+  def test_homepage_url
+    assert_equal "http://example.com", Bogus.homepage_url
+  end
+
+  def test_supported_card_types
+    assert_equal [:bogus], Bogus.supported_card_types
+  end
+
+  def test_supported_countries
+    assert_equal [], Bogus.supported_countries
+  end
 
   #   assert_equal(Gateway::STANDARD_ERROR_CODE[:processing_error], response.error_code)
 
