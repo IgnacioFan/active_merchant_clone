@@ -30,11 +30,15 @@ class BogusTest < Minitest::Test
     assert_equal [], Bogus.supported_countries
   end
 
-  #   assert_equal(Gateway::STANDARD_ERROR_CODE[:processing_error], response.error_code)
+  def test_authorize_success
+    assert @gateway.authorize(1000, @valid_credit_card).success?
+  end
 
-  #   error = assert_raises(ActiveMerchantClone::Billing::Error) do
-  #     @gateway.authorize(1000, credit_card("123"))
-  #   end
-  #   assert_equal("Bogus Gateway: Use CreditCard number ending in 1 for success, 2 for exception and anything else for error", error.message)
+  def test_authorize_failure
+    response = @gateway.authorize(1000, @invalid_credit_card)
+    refute response.success?
+    assert_equal Bogus::STANDARD_ERROR_CODE[:processing_error], response.error_code
+    error = assert_raises(ActiveMerchantClone::Billing::Error) { @gateway.authorize(1000, credit_card("123")) }
+    assert_equal "Bogus Gateway: Use CreditCard number ending in 1 for success, 2 for exception and anything else for error", error.message
   end
 end

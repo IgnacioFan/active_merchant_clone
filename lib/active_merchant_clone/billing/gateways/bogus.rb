@@ -14,7 +14,9 @@ module ActiveMerchantClone
       self.homepage_url = "http://example.com"
       self.supported_card_types = [:bogus]
       self.supported_countries = []
-      def authorize
+
+      def authorize(money, paysource, options = {})
+        authorize_swipe(money, paysource, options = {})
       end
 
       # def credit
@@ -37,6 +39,20 @@ module ActiveMerchantClone
 
       # def void
       # end
+
+      private
+
+      def authorize_swipe(money, paysource, options = {})
+        money = amount(money)
+        case paysource.number
+        when /1$/
+          Response.new(true, SUCCESS_MESSAGE, {authorize_amount: money}, test: true, authorization: AUTHORIZATION)
+        when /2$/
+          Response.new(false, FAILURE_MESSAGE, {authorize_amount: money, error: FAILURE_MESSAGE}, test: true, error_code: STANDARD_ERROR_CODE[:processing_error])
+        else
+          raise Error, NUMBER_ERROR_MESSAGE
+        end
+      end
     end
   end
 end
