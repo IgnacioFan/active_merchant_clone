@@ -1,13 +1,15 @@
 # ActiveMerchantClone
 
-ActiveMerchantClone is a side-project to provide plenty of payment gateways integration. Referring to a well-known open source project - ActiveMerchant, I built the project by diving into their source code, revamping them and then adding my own idea based on the current foundation.
+ActiveMerchantClone is a side-project to provide plenty of payment gateways integration. Referring to a well-known open source project - [ActiveMerchant](https://github.com/activemerchant/active_merchant), I built the project by diving into their source code, revamping them and then adding my own idea based on the current foundation.
+
+references http://activemerchant.org/
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'active_merchant_clone'
+gem "active_merchant_clone"
 ```
 
 And then execute:
@@ -34,28 +36,31 @@ rake test_billing
 ```ruby
 # Create a new credit card object
 credit_card = ActiveMerchantClone::Billing::CreditCard.new(
-  :number     => '4242424242424242',
-  :month      => '4',
-  :year       => '2022',
-  :first_name => 'Weilong',
-  :last_name  => 'Fan',
-  :verification_value  => '123'
+  :number     => "4242424242424242",
+  :month      => "4",
+  :year       => "2022",
+  :first_name => "Weilong",
+  :last_name  => "Fan",
+  :verification_value  => "123"
 )
 
 credit_card.validate # => {}
 credit_card.display_number # => XXXX-XXXX-XXXX-4242
 ```
 
-references http://activemerchant.org/
+## Behine the scence
 
 ## todos
 
 - [x] establish basic credit card model
 - [x] enhance credit card formatting
-- [x] add validate method for credit card model
+- [x] add validation methods for credit card model
 - [x] enhance test scope and test helper
 - [x] refactor credit_card and credit_card_methods
-- [ ] establish basic gateway and test
+- [x] establish basic gateway and test
+- [ ] integrate stripe gateway and test part1
+- [ ] integrate stripe gateway and test part2
+- [ ] integrate stripe gateway and test part3
 - [ ] ...
 - [ ] enhance gateway
 - [ ] enhance gateways
@@ -64,14 +69,14 @@ references http://activemerchant.org/
 ## Change logs
 
 ### phase 1 - establish basic credit card model
-- add `Model`(class) and `Empty`(a value object)
+- add `Model` and `Empty`
 - add `CreditCard` and test
 - add `CreditCardMethods` and add test
 
 ### phase 2 - enhance credit card formatting
 - add `CreditCardFormatting` and test
 
-### phase 3 - add validate method for credit card model
+### phase 3 - add validation methods for credit card model
 - add `validate_essential_attributes` and test
 - add `ExpiryDate` and test
 - add `validate_verification_value` and test
@@ -93,4 +98,10 @@ references http://activemerchant.org/
 - refactor `expiry_date` and test scope
 
 ### phase 6 - establish basic gateway and test
-- add gateway and borgus gateway(borgus is a testing gateway)
+- set up gateways files and gateways loader
+- set up test helper for gateway tests
+- add base class to make all gateway services be able to inherite
+- add borgus gateway and test
+
+### phase 7 - integrate stripe gateway and test part1
+- register payment intents api

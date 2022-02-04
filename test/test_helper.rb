@@ -8,7 +8,10 @@ Minitest::Reporters.use!
 
 require "active_merchant_clone"
 
+require "shared_context"
+
 # do some magic here!!
 Minitest::Test.class_eval do
   include ActiveMerchantClone::Billing
+  include Test::SharedContext
 end
