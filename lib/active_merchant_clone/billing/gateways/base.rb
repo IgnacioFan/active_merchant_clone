@@ -44,6 +44,7 @@ module ActiveMerchantClone
         end
       end
 
+      # TODO(weilong): consider supporting cents later, and each gateway can decide to support cents
       def amount(money)
         return nil if money.nil?
         raise ArgumentError, "money amount must be a positive Integer in cents." if money.is_a?(String)
